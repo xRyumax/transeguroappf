@@ -36,7 +36,7 @@ app.use('/api/configuracions', configuracionRouter);
 
 app.use('/api/auth', authRouter);
 
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
   console.log(`🚀 Servidor backend corriendo en puerto ${PORT}`);
   await connectDB();
