@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+<<<<<<< HEAD
     <meta charset="UTF-8">
     <title>TransSeguro App - Interfaces de Usuario</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -70,9 +71,73 @@
             }
         }
     </style>
+=======
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transporte Seguro - Seguimiento</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body {
+      margin: 0;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+    }
+
+    .sidebar {
+      background-color: #fff;
+      border-right: 1px solid #e5e7eb;
+      padding: 1rem;
+    }
+
+    .sidebar .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      text-decoration: none;
+      color: #374151;
+    }
+
+    .sidebar .nav-item.active, .sidebar .nav-item:hover {
+      background-color: #e0e7ff;
+      color: #2563eb;
+    }
+
+    .sidebar .nav-item i {
+      margin-right: 0.75rem;
+    }
+
+    .main-content {
+      padding: 1rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .map-container {
+      margin-top: 1rem;
+      height: calc(100vh - 100px);
+      border-radius: 0.5rem;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+>>>>>>> 36e6c1d122dc190a65359e5ccef36f21fa6dd909
 </head>
 
 <body>
+<<<<<<< HEAD
     <!-- Header -->
     <header
         class="bg-blue-800 text-white px-8 py-5 rounded-b-2xl mb-3 flex flex-col sm:flex-row items-center gap-4 justify-between">
@@ -390,6 +455,46 @@
             simularMovimientoVehiculos();
         };
     </script>
+=======
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo"><i class="fas fa-bus"></i> Transporte Seguro</div>
+    <nav>
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+      <a href="rutas.html" class="nav-item"><i class="fas fa-route"></i>Rutas</a>
+      <a href="vehiculos.html" class="nav-item"><i class="fas fa-bus-alt"></i>Vehículos</a>
+      <a href="paradas.html" class="nav-item"><i class="fas fa-map-marker-alt"></i>Paradas</a>
+      <a href="alertas.html" class="nav-item"><i class="fas fa-exclamation-triangle"></i>Alertas</a>
+      <a href="seguimiento.html" class="nav-item active"><i class="fas fa-map-marked-alt"></i>Seguimiento</a>
+      <a href="usuarios.html" class="nav-item"><i class="fas fa-users"></i>Usuarios</a>
+      <a href="configuracion.html" class="nav-item"><i class="fas fa-cog"></i>Configuración</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+    <div class="header">
+      <h1>Seguimiento en Tiempo Real</h1>
+    </div>
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([-12.0464, -77.0428], 13); // Lima
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18
+    }).addTo(map);
+
+    // Marcador de ejemplo
+    L.marker([-12.0464, -77.0428]).addTo(map)
+      .bindPopup('Vehículo #001')
+      .openPopup();
+  </script>
+>>>>>>> 36e6c1d122dc190a65359e5ccef36f21fa6dd909
 </body>
 
 </html>
