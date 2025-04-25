@@ -1,71 +1,395 @@
-
-<!DO
-
-
-    <table id="dataTable">
-      <thead>
-        <tr>
-          <th>Nombre</th><th>Descripción</th><th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Datos se insertan aquí -->
-      </tbody>
-    </table>
-
-    <script>
-      fetch('http://localhost:6000/api/seguimientos')
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.querySelector('#dataTable tbody');
-          data.forEach(item => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>${item.nombre}</td><td>${item.descripcion}</td><td>${item.estado}</td>
-              <td class="actions">
-                <button title="Ver"><i class="fas fa-eye"></i></button>
-                <button title="Editar"><i class="fas fa-edit"></i></button>
-                <button title="Eliminar"><i class="fas fa-trash"></i></button>
-              </td>
-            `;
-            tbody.appendChild(tr);
-          });
-        })
-        .catch(err => {
-          console.error('Error al cargar datos:', err);
-        });
-    </script>
-    
-
-CTYPE html>
+<!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Transporte Seguro - Seguimiento</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <meta charset="UTF-8">
+    <title>TransSeguro App - Interfaces de Usuario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- TailwindCSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Bootstrap icons (for admin/tools) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome for additional icons -->
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts Roboto -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <!-- Chart.js for visual analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- ECharts for flexible charts (routes, traffic, etc) -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <!-- Socket.io for realtime (demo only, live endpoint config needed) -->
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js"></script>
+    <!-- Leaflet for maps -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #23272f;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-weight: 700;
+            color: #19335a;
+        }
+
+        .leaflet-container {
+            width: 100%;
+            height: 420px;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
+
+        /* Hide scrollbars for seamless PDF export */
+        *::-webkit-scrollbar {
+            display: none;
+        }
+
+        .card {
+            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.09);
+        }
+
+        @media (max-width: 860px) {
+            .flex-row {
+                flex-direction: column;
+            }
+
+            .w-2-3,
+            .w-1-3 {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <i class="fas fa-bus"></i>
-      Transporte Seguro
-    </div>
-    <nav class="sidebar-nav">
-      <a href="dashboard.html" class=""><i class="fas fa-tachometer-alt"></i>Dashboard</a>
-      <a href="rutas.html" class=""><i class="fas fa-route"></i>Rutas</a>
-      <a href="vehiculos.html" class=""><i class="fas fa-bus-alt"></i>Vehículos</a>
-      <a href="paradas.html" class=""><i class="fas fa-map-marker-alt"></i>Paradas</a>
-      <a href="alertas.html" class=""><i class="fas fa-exclamation-triangle"></i>Alertas</a>
-      <a href="seguimiento.html" class="active"><i class="fas fa-map-marked-alt"></i>Seguimiento</a>
-      <a href="usuarios.html" class=""><i class="fas fa-users"></i>Usuarios</a>
-      <a href="configuracion.html" class=""><i class="fas fa-cog"></i>Configuración</a>
-    </nav>
-  </aside>
-  <main class="main-content">
-    <h1>Seguimiento</h1>
-    <p>Contenido de la página Seguimiento...</p>
-  </main>
+    <!-- Header -->
+    <header
+        class="bg-blue-800 text-white px-8 py-5 rounded-b-2xl mb-3 flex flex-col sm:flex-row items-center gap-4 justify-between">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-bus-alt text-3xl"></i>
+            <h1 class="text-3xl font-bold">TransSeguro App</h1>
+        </div>
+        <nav class="flex space-x-7 mt-2 sm:mt-0">
+            <a href="#panel" class="hover:underline">Panel de Administración</a>
+            <a href="#mapa" class="hover:underline">Seguimiento en Tiempo Real</a>
+            <a href="#alertas" class="hover:underline">Gestión de Alertas</a>
+            <a href="#estadisticas" class="hover:underline">Estadísticas</a>
+        </nav>
+    </header>
+    <main class="max-w-7xl mx-auto px-4 py-4">
+
+        <!-- Panel de administración -->
+        <section id="panel" class="mb-12">
+            <h2 class="text-2xl mb-4"><i class="fas fa-user-cog mr-2"></i> Panel de Administración</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Usuarios -->
+                <div class="card bg-white rounded-xl p-5">
+                    <div class="flex items-center mb-2"><i class="fa fa-users text-blue-700 mr-2"></i> <span
+                            class="font-semibold">Usuarios</span></div>
+                    <ul class="text-gray-800 space-y-1 text-sm" id="admin-users-list">
+                        <li><span class="font-medium">Ana Pérez</span> — anap@mail.com</li>
+                        <li><span class="font-medium">Carlos Rivera</span> — carlosr@mail.com</li>
+                    </ul>
+                    <button class="mt-3 bg-blue-700 hover:bg-blue-600 text-white px-4 py-1 rounded text-sm"><i
+                            class="fa fa-plus"></i> Agregar</button>
+                </div>
+                <!-- Vehículos -->
+                <div class="card bg-white rounded-xl p-5">
+                    <div class="flex items-center mb-2"><i class="fa fa-bus text-blue-700 mr-2"></i> <span
+                            class="font-semibold">Vehículos</span></div>
+                    <ul class="text-gray-800 space-y-1 text-sm" id="admin-vehicle-list">
+                        <li>Placa <span class="font-medium">ABC123</span> · BUS · Activo</li>
+                        <li>Placa <span class="font-medium">XYZ456</span> · MINIBUS · Mantenimiento</li>
+                    </ul>
+                    <button class="mt-3 bg-blue-700 hover:bg-blue-600 text-white px-4 py-1 rounded text-sm"><i
+                            class="fa fa-plus"></i> Nuevo Vehículo</button>
+                </div>
+                <!-- Rutas -->
+                <div class="card bg-white rounded-xl p-5">
+                    <div class="flex items-center mb-2"><i class="fa fa-route text-blue-700 mr-2"></i> <span
+                            class="font-semibold">Rutas</span></div>
+                    <ul class="text-gray-800 space-y-1 text-sm" id="admin-route-list">
+                        <li>Línea 24 - Centro–Sur · Activa</li>
+                        <li>Línea A - Oeste–Este · Inactiva</li>
+                    </ul>
+                    <button class="mt-3 bg-blue-700 hover:bg-blue-600 text-white px-4 py-1 rounded text-sm"><i
+                            class="fa fa-plus"></i> Añadir Ruta</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mapa interactivo de seguimiento en tiempo real -->
+        <section id="mapa" class="mb-12">
+            <h2 class="text-2xl mb-4 flex items-center"><i class="fas fa-map-marker-alt mr-2"></i> Seguimiento en Tiempo
+                Real</h2>
+            <div class="flex flex-row gap-6">
+                <div class="w-2-3">
+                    <div id="map" class="leaflet-container"></div>
+                </div>
+                <div class="w-1-3">
+                    <div class="bg-white card p-4 rounded-xl">
+                        <h3 class="font-semibold text-lg mb-2"><i class="fas fa-bus text-blue-700"></i> Vehículos en
+                            Ruta</h3>
+                        <ul class="text-sm" id="vehicle-realtime-list">
+                            <!-- Data from JS -->
+                        </ul>
+                    </div>
+                    <div class="bg-white card p-4 rounded-xl mt-6">
+                        <h4 class="font-semibold text-lg mb-2"><i class="fas fa-info-circle text-yellow-600"></i>
+                            Últimas Posiciones</h4>
+                        <ul class="text-sm" id="location-realtime-list">
+                            <!-- Data from JS -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel de alertas -->
+        <section id="alertas" class="mb-12">
+            <h2 class="text-2xl mb-4"><i class="fas fa-exclamation-triangle mr-2 text-red-600"></i> Gestión de Alertas
+            </h2>
+            <div class="bg-white card rounded-xl p-6">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="border-b border-gray-200 text-left">
+                            <th class="px-2 py-1">Tipo</th>
+                            <th class="px-2 py-1">Severidad</th>
+                            <th class="px-2 py-1">Ubicación</th>
+                            <th class="px-2 py-1">Estado</th>
+                            <th class="px-2 py-1">Hora</th>
+                            <th class="px-2 py-1"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="alert-list-tbody" class="text-sm">
+                        <!-- JS-driven rows -->
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+        <div id="map" style="width: 100%; height: 420px;"></div>
+
+        <!-- Panel de estadísticas -->
+        <section id="estadisticas" class="mb-12">
+            <h2 class="text-2xl mb-4"><i class="fas fa-chart-bar mr-2"></i> Panel de Estadísticas</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Chart 1: Vehículos activos vs mantenimiento -->
+                <div class="card bg-white p-4 rounded-xl">
+                    <h4 class="mb-2 font-semibold"><i class="fa fa-bus"></i> Estado de la flota</h4>
+                    <canvas id="vehicleStatusChart" height="190"></canvas>
+                </div>
+                <!-- Chart 2: Alertas semanales -->
+                <div class="card bg-white p-4 rounded-xl">
+                    <h4 class="mb-2 font-semibold"><i class="fa fa-bell"></i> Alertas por Tipo (Última semana)</h4>
+                    <div id="alertTypeChart" style="width:100%; height:210px;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="my-10 text-center text-gray-500 text-sm">
+            <span>&copy; 2024 TransSeguro • Demo UI</span>
+        </footer>
+    </main>
+    <script>
+        // =================== MAPA INTERACTIVO ===================
+        // Coordenadas simuladas de rutas/paradas
+        const vehicleData = [
+            {
+                id: 1,
+                placa: "ABC123",
+                tipo: "BUS",
+                ruta: "24 Centro-Sur",
+                lat: -17.392, lng: -66.160,
+                velocidad: 34,
+                estado: "En Ruta",
+                hora: new Date(Date.now() - 1000 * 120)
+            },
+            {
+                id: 2,
+                placa: "XYZ456",
+                tipo: "MINIBUS",
+                ruta: "A Oeste-Este",
+                lat: -17.387, lng: -66.159,
+                velocidad: 27,
+                estado: "En Ruta",
+                hora: new Date(Date.now() - 1000 * 40)
+            },
+            {
+                id: 3,
+                placa: "TRT789",
+                tipo: "BUS",
+                ruta: "24 Centro-Sur",
+                lat: -17.393, lng: -66.155,
+                velocidad: 41,
+                estado: "Mantenimiento",
+                hora: new Date(Date.now() - 1000 * 300)
+            }
+        ];
+        const detenerActualizaciones = false; // Para PDF, detener intervalos
+        let map, markers = [];
+
+        function inicializarMapa() {
+            map = L.map('map', { scrollWheelZoom: false }).setView([-17.390, -66.161], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap',
+                maxZoom: 18
+            }).addTo(map);
+
+            markers = vehicleData.map(vehicle => {
+                let icono = L.icon({
+                    iconUrl: vehicle.tipo === "BUS" ?
+                        "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/icons/bus-front.svg" :
+                        "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/icons/taxi-front.svg",
+                    iconSize: [29, 29]
+                });
+                let marker = L.marker([vehicle.lat, vehicle.lng], { icon: icono })
+                    .bindPopup(`<b>${vehicle.placa}</b><br>${vehicle.tipo}<br>${vehicle.ruta}`);
+                marker.addTo(map);
+                return marker;
+            });
+        }
+
+        function actualizarSideBarVehiculos() {
+            const target = document.getElementById('vehicle-realtime-list');
+            target.innerHTML = vehicleData.map(v =>
+                `<li class="py-1 border-b"><span class="font-medium">${v.placa}</span> — ${v.tipo} (${v.ruta})<br><span class="text-gray-500">Vel. ${v.velocidad} km/h</span> <span class="text-green-700">${v.estado}</span></li>`
+            ).join('');
+            const loc = document.getElementById('location-realtime-list');
+            loc.innerHTML = vehicleData.map(v =>
+                `<li class="py-1 border-b"><i class="fa fa-clock"></i> <span class="font-medium">${v.placa}</span>
+        <br/>[${v.lat.toFixed(4)}, ${v.lng.toFixed(4)}] — <span class="text-gray-400">${v.hora.toLocaleTimeString()}</span></li>`
+            ).join('');
+        }
+
+        // ================== ALERTAS SIMULADAS ==================
+        const alertasData = [
+            {
+                tipo: "RETRASO",
+                severidad: "ALTA",
+                ubicacion: "-17.392,-66.160",
+                estado: "ACTIVA",
+                hora: new Date(Date.now() - 1000 * 800)
+            },
+            {
+                tipo: "ACCIDENTE",
+                severidad: "MEDIA",
+                ubicacion: "-17.387,-66.159",
+                estado: "RESUELTA",
+                hora: new Date(Date.now() - 1000 * 6000)
+            },
+            {
+                tipo: "AVERIA",
+                severidad: "BAJA",
+                ubicacion: "-17.393,-66.155",
+                estado: "ACTIVA",
+                hora: new Date(Date.now() - 1000 * 1400)
+            },
+            {
+                tipo: "DESVIO",
+                severidad: "MEDIA",
+                ubicacion: "-17.390,-66.166",
+                estado: "ACTIVA",
+                hora: new Date(Date.now() - 1000 * 2000)
+            }
+        ];
+
+        function pintarTablaAlertas() {
+            const tbody = document.getElementById('alert-list-tbody');
+            tbody.innerHTML = alertasData.map(a =>
+                `<tr>
+          <td class="px-2 py-1">${a.tipo}</td>
+          <td class="px-2 py-1">${a.severidad}</td>
+          <td class="px-2 py-1">${a.ubicacion}</td>
+          <td class="px-2 py-1">
+            <span class="font-semibold ${a.estado == "ACTIVA" ? "text-red-600" : "text-green-700"}">${a.estado}</span>
+          </td>
+          <td class="px-2 py-1">${a.hora.toLocaleTimeString()}</td>
+          <td class="px-2 py-1">
+            <button class="text-blue-700 hover:underline text-xs" title="Detalle">
+              <i class="fas fa-info-circle"></i>
+            </button>
+            ${a.estado == "ACTIVA" ? `<button class="ml-1 text-green-700 hover:underline text-xs" title="Resolver">
+              <i class="fas fa-check"></i></button>` : ""}
+          </td>
+        </tr>`
+            ).join('');
+        }
+
+        // ========== CHART: ESTADO DE VEHÍCULOS Y ALERTAS ===========
+        function graficoEstadoVehiculos() {
+            let ctx = document.getElementById('vehicleStatusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Activo', 'Mantenimiento', 'Inactivo'],
+                    datasets: [{
+                        data: [
+                            vehicleData.filter(v => v.estado == "En Ruta").length,
+                            vehicleData.filter(v => v.estado == "Mantenimiento").length,
+                            vehicleData.filter(v => v.estado == "Inactivo").length || 0
+                        ],
+                        backgroundColor: ['#2563eb', '#eab308', '#e11d48']
+                    }]
+                },
+                options: { plugins: { legend: { position: 'bottom', labels: { color: '#222', font: { size: 14 } } } }, responsive: true }
+            });
+        }
+
+        function graficoAlertasPorTipo() {
+            let chartDom = document.getElementById('alertTypeChart');
+            let myChart = echarts.init(chartDom);
+            let tipos = ["RETRASO", "ACCIDENTE", "AVERIA", "DESVIO"];
+            let contar = tipo => alertasData.filter(a => a.tipo === tipo).length;
+            myChart.setOption({
+                tooltip: {},
+                xAxis: { type: 'category', data: tipos },
+                yAxis: { type: 'value' },
+                series: [{
+                    data: tipos.map(contar),
+                    type: 'bar',
+                    itemStyle: {
+                        color: params => ['#f97316', '#f43f5e', '#2dd4bf', '#818cf8'][params.dataIndex]
+                    }
+                }]
+            });
+        }
+
+        // ============ DEMO SOCKET.IO REALTIME UI ===========
+        function simularMovimientoVehiculos() {
+            // No conectar a servidor, solo demo
+            setInterval(function () {
+                if (detenerActualizaciones) return;
+                // mover ligeramente
+                vehicleData[0].lat += (Math.random() - 0.5) / 600; vehicleData[0].lng += (Math.random() - 0.5) / 600;
+                vehicleData[0].hora = new Date();
+                markers[0].setLatLng([vehicleData[0].lat, vehicleData[0].lng]);
+                actualizarSideBarVehiculos();
+            }, 3000);
+        }
+
+        // =========== INICIO ==============
+        window.onload = function () {
+            inicializarMapa();
+            actualizarSideBarVehiculos();
+            pintarTablaAlertas();
+            graficoEstadoVehiculos();
+            graficoAlertasPorTipo();
+            simularMovimientoVehiculos();
+        };
+    </script>
 </body>
+
 </html>
