@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -8,4 +9,28 @@
     "mongoose": "^8.14.0",
     "nodemon": "^3.1.10"
   }
+=======
+  "name": "transeguroapp",
+  "version": "1.0.0",
+  "description": "Sistema para gestión de transporte seguro con backend y frontend completos.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.11",
+    "nodemon": "^2.0.15"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "author": "Alcidescu",
+  "license": "MIT"
+>>>>>>> 36e6c1d122dc190a65359e5ccef36f21fa6dd909
 }

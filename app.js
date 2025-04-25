@@ -36,7 +36,11 @@ app.use('/api/configuracions', configuracionRouter);
 
 app.use('/api/auth', authRouter);
 
+<<<<<<< HEAD
 const PORT = process.env.PORT || 6000; // Cambia 6000 por 3000 u otro puerto seguro
+=======
+const PORT = process.env.PORT || 5000;
+>>>>>>> 36e6c1d122dc190a65359e5ccef36f21fa6dd909
 app.listen(PORT, async () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   await connectDB();
