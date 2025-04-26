@@ -1,4 +1,5 @@
-const authRouter = require('./routers/authRouter');
+const authRouter = require('./routes/authRouter');
+const mongoose = require('mongoose');
 
 const vehiculoRouter = require('./routers/vehiculoRouter');
 const rutaRouter = require('./routers/rutaRouter');
@@ -6,7 +7,6 @@ const paradaRouter = require('./routers/paradaRouter');
 const alertaRouter = require('./routers/alertaRouter');
 const seguimientoRouter = require('./routers/seguimientoRouter');
 const configuracionRouter = require('./routers/configuracionRouter');
-
 
 require('dotenv').config();
 const express = require('express');
@@ -29,6 +29,17 @@ app.use('/api/alertas', alertaRouter);
 app.use('/api/seguimientos', seguimientoRouter);
 app.use('/api/configuracions', configuracionRouter);
 app.use('/api/auth', authRouter);
+
+mongoose.connect('mongodb://localhost:27017/transeguro', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+  family: 4
+})
+.then(() => console.log('Conectado a MongoDB'))
+.catch(err => console.error('Error de conexión a MongoDB:', err));
+
+app.use('/api', authRoutes);
 
 // Servir archivos estáticos y manejar rutas del frontend
 app.use(express.static(path.join(__dirname, 'frontend/public')));

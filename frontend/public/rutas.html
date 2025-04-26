@@ -5,342 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Transporte Seguro - Rutas</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1e40af;
-      --primary-light: #93c5fd;
-      --gray-100: #f3f4f6;
-      --gray-200: #e5e7eb;
-      --gray-500: #6b7280;
-      --gray-700: #374151;
-      --white: #ffffff;
-      --error: #dc2626;
-      --warning: #f59e0b;
-      --success: #10b981;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      min-height: 100vh;
-      background-color: var(--gray-100);
-    }
-
-    /* Sidebar */
-    .sidebar {
-      background-color: var(--white);
-      border-right: 1px solid var(--gray-200);
-      height: 100vh;
-      position: sticky;
-      top: 0;
-    }
-
-    .sidebar-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid var(--gray-200);
-    }
-
-    .sidebar-logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: var(--primary);
-      font-weight: 600;
-      font-size: 1.25rem;
-    }
-
-    .sidebar-logo i {
-      font-size: 1.5rem;
-    }
-
-    .sidebar-nav {
-      padding: 1rem 0;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      padding: 0.75rem 1.5rem;
-      color: var(--gray-700);
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .nav-item:hover {
-      background-color: var(--gray-100);
-      color: var(--primary);
-    }
-
-    .nav-item.active {
-      background-color: var(--primary-light);
-      color: var(--primary);
-      border-right: 3px solid var(--primary);
-    }
-
-    .nav-item i {
-      margin-right: 0.75rem;
-      width: 24px;
-      text-align: center;
-    }
-
-    /* Main Content */
-    .main-content {
-      padding: 2rem;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-
-    .header h1 {
-      font-size: 1.75rem;
-      color: var(--gray-700);
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .btn {
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-primary {
-      background-color: var(--primary);
-      color: white;
-      border: none;
-    }
-
-    .btn-primary:hover {
-      background-color: var(--primary-dark);
-    }
-
-    .btn-outline {
-      background-color: transparent;
-      border: 1px solid var(--gray-300);
-      color: var(--gray-700);
-    }
-
-    .btn-outline:hover {
-      background-color: var(--gray-100);
-    }
-
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-    }
-
-    /* Filtros */
-    .filters {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-    }
-
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-      min-width: 200px;
-    }
-
-    .filter-label {
-      font-size: 0.875rem;
-      color: var(--gray-500);
-      margin-bottom: 0.25rem;
-    }
-
-    .filter-select, .filter-input {
-      padding: 0.5rem 0.75rem;
-      border: 1px solid var(--gray-300);
-      border-radius: 0.375rem;
-      background-color: var(--white);
-    }
-
-    /* Tabla de rutas */
-    .routes-table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: var(--white);
-      border-radius: 0.5rem;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .routes-table th {
-      background-color: var(--gray-100);
-      color: var(--gray-700);
-      font-weight: 600;
-      text-align: left;
-      padding: 1rem;
-    }
-
-    .routes-table td {
-      padding: 1rem;
-      border-bottom: 1px solid var(--gray-200);
-      vertical-align: middle;
-    }
-
-    .routes-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .routes-table tr:hover {
-      background-color: var(--gray-50);
-    }
-
-    .route-code {
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    .route-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    .status-active {
-      background-color: var(--success-50);
-      color: var(--success-700);
-    }
-
-    .status-inactive {
-      background-color: var(--gray-100);
-      color: var(--gray-700);
-    }
-
-    .status-maintenance {
-      background-color: var(--warning-50);
-      color: var(--warning-700);
-    }
-
-    .route-actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .action-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background-color: transparent;
-      border: none;
-      color: var(--gray-500);
-    }
-
-    .action-btn:hover {
-      background-color: var(--gray-100);
-      color: var(--primary);
-    }
-
-    /* Paginación */
-    .pagination {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 1.5rem;
-    }
-
-    .pagination-info {
-      color: var(--gray-500);
-      font-size: 0.875rem;
-    }
-
-    .pagination-controls {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .page-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      background-color: var(--white);
-      border: 1px solid var(--gray-200);
-      color: var(--gray-700);
-    }
-
-    .page-btn.active {
-      background-color: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    .page-btn:hover:not(.active) {
-      background-color: var(--gray-100);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      body {
-        grid-template-columns: 1fr;
-      }
-      
-      .sidebar {
-        height: auto;
-        position: relative;
-      }
-      
-      .filters {
-        flex-direction: column;
-      }
-      
-      .filter-group {
-        width: 100%;
-      }
-      
-      .routes-table {
-        display: block;
-        overflow-x: auto;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="css/rutas.css">
 </head>
 <body>
   <!-- Sidebar -->
@@ -559,3 +224,115 @@
                 <i class="fas fa-circle" style="font-size: 8px;"></i>
                 Activa
               </span>
+            </td>
+            <td>
+              <div class="route-actions">
+                <button class="action-btn" title="Ver detalles">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination">
+      <div class="pagination-info">
+        Mostrando 1 a 5 de 20 rutas
+      </div>
+      <div class="pagination-controls">
+        <button class="page-btn">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">4</button>
+        <button class="page-btn">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Nueva Ruta -->
+  <div class="modal" id="addRouteModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Nueva Ruta</h2>
+        <button class="close-btn" id="closeModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="addRouteForm">
+          <div class="form-group">
+            <label for="routeCode">Código</label>
+            <input type="text" id="routeCode" name="routeCode" required>
+          </div>
+          <div class="form-group">
+            <label for="routeName">Nombre</label>
+            <input type="text" id="routeName" name="routeName" required>
+          </div>
+          <div class="form-group">
+            <label for="routeStops">Paradas</label>
+            <input type="number" id="routeStops" name="routeStops" required>
+          </div>
+          <div class="form-group">
+            <label for="routeSchedule">Horario</label>
+            <input type="text" id="routeSchedule" name="routeSchedule" required>
+          </div>
+          <div class="form-group">
+            <label for="routeVehicles">Vehículos</label>
+            <input type="number" id="routeVehicles" name="routeVehicles" required>
+          </div>
+          <div class="form-group">
+            <label for="routeStatus">Estado</label>
+            <select id="routeStatus" name="routeStatus" required>
+              <option value="active">Activa</option>
+              <option value="inactive">Inactiva</option>
+              <option value="maintenance">En mantenimiento</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-outline" id="cancelModalBtn">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal logic
+    const addRouteBtn = document.getElementById('addRouteBtn');
+    const addRouteModal = document.getElementById('addRouteModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+
+    addRouteBtn.addEventListener('click', () => {
+      addRouteModal.style.display = 'block';
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      addRouteModal.style.display = 'none';
+    });
+
+    cancelModalBtn.addEventListener('click', () => {
+      addRouteModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (event) => {
+      if (event.target === addRouteModal) {
+        addRouteModal.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
