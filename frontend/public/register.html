@@ -15,23 +15,23 @@
         
         <div class="input-field">
           <i class="fas fa-user"></i>
-          <input type="text" id="nombre" placeholder="Nombre completo" required>
+          <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
         </div>
         
         <div class="input-field">
           <i class="fas fa-envelope"></i>
-          <input type="email" id="correo" placeholder="Correo electrónico" required>
+          <input type="email" id="correo" name="correo" placeholder="Correo electrónico" required>
         </div>
         
         <div class="input-field">
           <i class="fas fa-lock"></i>
-          <input type="password" id="password" placeholder="Contraseña" required>
+          <input type="password" id="password" name="password" placeholder="Contraseña" required>
           <i class="fas fa-eye toggle-password" id="togglePassword"></i>
         </div>
         
         <div class="input-field">
           <i class="fas fa-user-tag"></i>
-          <select id="rol" required>
+          <select id="rol" name="rol" required>
             <option value="">Seleccionar Rol</option>
             <option value="admin">Administrador</option>
             <option value="agente">Agente</option>
@@ -57,45 +57,46 @@
       </div>
     </div>
   </div>
-  <div class="video-background">
-    <video autoplay muted loop id="bgVideo">
-      <source src="./assets/images/registro.mp4" type="video/mp4">
-      
-      Tu navegador no soporta videos HTML5.
-    </video>
-  </div>
 
   <script>
     // Toggle para mostrar/ocultar contraseña
-    document.getElementById('togglePassword').addEventListener('click', function() {
-      const passwordInput = document.getElementById('password');
-      const icon = this;
-      
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-      } else {
-        passwordInput.type = 'password';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
-      }
-    });
+    const togglePassword = document.getElementById('togglePassword');
+    if (togglePassword) {
+      togglePassword.addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        const icon = this;
+        
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+          passwordInput.type = 'password';
+          icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+      });
+    }
 
     // Botón "Ya tengo cuenta"
-    document.getElementById('signIn').addEventListener('click', function() {
-      window.location.href = 'login.html';
-    });
+    const signIn = document.getElementById('signIn');
+    if (signIn) {
+      signIn.addEventListener('click', function() {
+        window.location.href = 'login.html';
+      });
+    }
 
     // Manejo del formulario
-    document.getElementById('formRegistro').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const nombre = document.getElementById('nombre').value;
-    const correo = document.getElementById('correo').value;
-    const password = document.getElementById('password').value;
-    const rol = document.getElementById('rol').value;
+    const formRegistro = document.getElementById('formRegistro');
+    if (formRegistro) {
+      formRegistro.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const nombre = document.getElementById('nombre').value;
+        const correo = document.getElementById('correo').value;
+        const password = document.getElementById('password').value;
+        const rol = document.getElementById('rol').value;
 
     try {
-      const res = await fetch('/api/register', {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre, correo, password, rol })
@@ -132,17 +133,7 @@
       alert('Error en la conexión. Intente nuevamente.');
     }
   });
-  </script>
-  <script>
-    document.getElementById('signIn').addEventListener('click', function() {
-      // Redirigir a login.html
-      window.location.href = "login.html";
-    });
-  </script>
-  <script>
-    document.getElementById('volverMenu').addEventListener('click', function() {
-      window.location.href = 'index.html';
-    });
+    }
   </script>
 </body>
 </html>

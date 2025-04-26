@@ -79,7 +79,7 @@
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
   
       try {
-        const res = await fetch('/api/login', {
+        const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ correo, password })
@@ -113,23 +113,28 @@
         if (res.ok) {
           showMessage('✅ Inicio de sesión exitoso. Bienvenido!', true);
           
-          localStorage.setItem('nombre', data.nombre);
-          localStorage.setItem('rol', data.rol);
-          localStorage.setItem('correo', data.correo);
-          localStorage.setItem('id', data.id);
+          // Guardar datos del usuario en localStorage con validación
+          localStorage.setItem('nombre', data.nombre || '');
+          localStorage.setItem('rol', data.rol || 'usuario');
+          localStorage.setItem('correo', data.correo || '');
+          localStorage.setItem('id', data.id || '');
   
           // Redirigir después de 1 segundo
           setTimeout(() => {
-            if (data.rol === 'admin') window.location.href = 'dashboard.html';
-            else if (data.rol === 'conductor') window.location.href = 'dashboard_conductor.html';
-            else if (data.rol === 'pasajero') window.location.href = 'dashboard_pasajero.html';
+            const rol = data.rol || 'usuario';
+            if (rol === 'admin') window.location.href = 'dashboard.html';
+            else if (rol === 'conductor') window.location.href = 'dashboard_conductor.html';
+            else if (rol === 'pasajero') window.location.href = 'dashboard_pasajero.html';
+            else window.location.href = 'dashboard.html'; // Ruta por defecto
           }, 1000);
         } else {
-          showMessage('❌ ' + data.message, false);
+          // Mostrar mensaje de error con validación para evitar 'undefined'
+          const errorMsg = data && typeof data.message === 'string' ? data.message : 'Error al iniciar sesión';
+          showMessage('❌ ' + errorMsg, false);
         }
       } catch (error) {
-        showMessage('⚠️ Error de conexión', false);
-        console.error('Error:', error);
+        console.error('Error de conexión:', error);
+        showMessage('⚠️ Error de conexión. Intente nuevamente.', false);
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = 'Iniciar sesión';
