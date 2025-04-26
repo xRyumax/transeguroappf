@@ -20,7 +20,7 @@ Edita el archivo `/backend/.env`:
 
 ```
 MONGODB_URI=mongodb://localhost:27017/TransSeguro
-PORT=6000
+PORT=3000
 ```
 
 ### 3. Iniciar el backend
@@ -30,17 +30,17 @@ npm install
 npm start
 ```
 
-Servidor escuchando en: `http://localhost:6000`
+Servidor escuchando en: `http://localhost:3000`
 
 ### 4. Probar APIs
 Usar Thunder Client o Postman para probar:
-- `GET http://localhost:6000/api/usuarios`
-- `GET http://localhost:6000/api/vehiculos`
-- `GET http://localhost:6000/api/rutas`
-- `GET http://localhost:6000/api/paradas`
-- `GET http://localhost:6000/api/alertas`
-- `GET http://localhost:6000/api/seguimientos`
-- `GET http://localhost:6000/api/configuraciones`
+- `GET http://localhost:3000/api/usuarios`
+- `GET http://localhost:3000/api/vehiculos`
+- `GET http://localhost:3000/api/rutas`
+- `GET http://localhost:3000/api/paradas`
+- `GET http://localhost:3000/api/alertas`
+- `GET http://localhost:3000/api/seguimientos`
+- `GET http://localhost:3000/api/configuraciones`
 
 ### 5. Ver el frontend
 Abrir archivos HTML desde `/frontend/public/` en el navegador:
