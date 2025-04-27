@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transporte Seguro - Usuarios</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="css/usuarios.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-bus"></i>
+      Transporte Seguro
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+      <a href="rutas.html"><i class="fas fa-route"></i>Rutas</a>
+      <a href="vehiculos.html"><i class="fas fa-bus-alt"></i>Vehículos</a>
+      <a href="paradas.html"><i class="fas fa-map-marker-alt"></i>Paradas</a>
+      <a href="alertas.html"><i class="fas fa-exclamation-triangle"></i>Alertas</a>
+      <a href="seguimiento.html"><i class="fas fa-map-marked-alt"></i>Seguimiento</a>
+      <a href="usuarios.html" class="active"><i class="fas fa-users"></i>Usuarios</a>
+      <a href="configuracion.html"><i class="fas fa-cog"></i>Configuración</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <div class="header">
+      <h1>Gestión de Usuarios</h1>
+      <button class="btn"><i class="fas fa-plus"></i>Nuevo Usuario</button>
+    </div>
+
+    <table id="tablaUsuarios">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Usuarios se insertan aquí -->
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    fetch('http://localhost:3000/api/usuarios')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.querySelector('#tablaUsuarios tbody');
+        data.forEach(u => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${u.nombre}</td>
+            <td>${u.correo}</td>
+            <td>${u.rol}</td>
+            <td>${u.estado || 'Activo'}</td>
+            <td class="actions">
+              <button title="Ver"><i class="fas fa-eye"></i></button>
+              <button title="Editar"><i class="fas fa-edit"></i></button>
+              <button title="Eliminar"><i class="fas fa-trash"></i></button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        console.error('Error al cargar usuarios:', err);
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TransSeguro App - Interfaces de Usuario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- TailwindCSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- Bootstrap icons (for admin/tools) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Font Awesome for additional icons -->
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts Roboto -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+  <!-- Chart.js for visual analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <!-- ECharts for flexible charts (routes, traffic, etc) -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+  <!-- Socket.io for realtime (demo only, live endpoint config needed) -->
+  <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js"></script>
+  <!-- Leaflet for maps -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="css/seguimiento.css">
+</head>
+<body>
+  <!-- Header -->
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-bus-alt text-2xl"></i>
+      <h1 class="text-xl font-bold">TransSeguro</h1>
+    </div>
+    <nav>
+      <a href="index.html" class="nav-link">
+        <i class="fas fa-home"></i>
+        <span>Inicio</span>
+      </a>
+      <a href="dashboard.html" class="nav-link">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="seguimiento.html" class="nav-link active">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>Seguimiento</span>
+      </a>
+      <a href="rutas.html" class="nav-link">
+        <i class="fas fa-route"></i>
+        <span>Rutas</span>
+      </a>
+      <a href="alertas.html" class="nav-link">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Alertas</span>
+      </a>
+      <a href="reportes.html" class="nav-link">
+        <i class="fas fa-chart-bar"></i>
+        <span>Reportes</span>
+      </a>
+      <a href="configuracion.html" class="nav-link">
+        <i class="fas fa-cog"></i>
+        <span>Configuración</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="flex justify-between items-center mb-6">
+      <button id="menu-toggle" class="text-2xl md:hidden">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h1 class="text-2xl font-bold">Seguimiento en Tiempo Real</h1>
+      <div class="flex gap-4">
+        <button class="text-gray-600 hover:text-gray-900">
+          <i class="fas fa-bell text-xl"></i>
+        </button>
+        <button class="text-gray-600 hover:text-gray-900">
+          <i class="fas fa-user-circle text-xl"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Contenedor del mapa y panel lateral -->
+    <div class="flex flex-col md:flex-row gap-4">
+      <!-- Contenedor del mapa -->
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+
+      <!-- Panel lateral -->
+      <div class="w-full md:w-80 space-y-4 flex-shrink-0">
+        <!-- Vehículos en ruta -->
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="font-semibold text-lg mb-3">
+            <i class="fas fa-bus text-blue-600 mr-2"></i>Vehículos en Ruta
+          </h3>
+          <div id="vehicle-realtime-list" class="space-y-2"></div>
+        </div>
+
+        <!-- Últimas ubicaciones -->
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="font-semibold text-lg mb-3">
+            <i class="fas fa-map-marker-alt text-red-600 mr-2"></i>Últimas Ubicaciones
+          </h3>
+          <div id="location-realtime-list" class="space-y-2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // =================== MAPA INTERACTIVO ===================
+    let map = null;
+    let markers = [];
+    let detenerActualizaciones = false;
+    let intervalId = null;
+
+    // Rutas exactas basadas en OpenStreetMap (ajustar según ciudad)
+    const rutasDefinidas = {
+      'Línea 1 - Norte': [
+        [-17.3833, -66.1667], // Plaza Principal
+        [-17.3833, -66.1650], // Calle Bolívar
+        [-17.3815, -66.1650], // Giro izquierda
+        [-17.3815, -66.1630], // Av. 6 de Agosto
+        [-17.3780, -66.1630], // Continúa por Av. 6 de Agosto
+        [-17.3780, -66.1600], // Giro derecha
+        [-17.3750, -66.1600]  // Terminal Norte
+      ],
+      'Línea 2 - Sur': [
+        [-17.3933, -66.1567], // Plaza del Estudiante
+        [-17.3933, -66.1580], // Calle España
+        [-17.3910, -66.1580], // Giro derecha
+        [-17.3910, -66.1620], // Av. Arce
+        [-17.3930, -66.1620], // Giro izquierda
+        [-17.3930, -66.1650]  // Terminal Sur
+      ],
+      'Línea 3 - Este': [
+        [-17.3733, -66.1767], // Plaza Cobija
+        [-17.3733, -66.1750], // Calle Junín
+        [-17.3720, -66.1750], // Giro derecha
+        [-17.3720, -66.1720], // Av. Circunvalación
+        [-17.3700, -66.1720], // Continúa por Av. Circunvalación
+        [-17.3700, -66.1680], // Giro izquierda
+        [-17.3680, -66.1680]  // Terminal Este
+      ]
+    };
+
+    // Datos simulados de vehículos
+    const vehicleData = [
+      {
+        id: 1,
+        placa: "ABC123",
+        tipo: "BUS",
+        ruta: "Línea 1 - Norte",
+        lat: -17.3833,
+        lng: -66.1667,
+        velocidad: 30,
+        estado: "En Ruta",
+        conductor: "Juan Pérez",
+        pasajeros: 32,
+        hora: new Date(),
+        rutaIndex: 0,
+        segmentoIndex: 0,
+        progress: 0
+      },
+      {
+        id: 2,
+        placa: "XYZ789",
+        tipo: "BUS",
+        ruta: "Línea 2 - Sur",
+        lat: -17.3933,
+        lng: -66.1567,
+        velocidad: 25,
+        estado: "En Ruta",
+        conductor: "María García",
+        pasajeros: 25,
+        hora: new Date(),
+        rutaIndex: 0,
+        segmentoIndex: 0,
+        progress: 0
+      },
+      {
+        id: 3,
+        placa: "DEF456",
+        tipo: "MINIBUS",
+        ruta: "Línea 3 - Este",
+        lat: -17.3733,
+        lng: -66.1767,
+        velocidad: 35,
+        estado: "En Ruta",
+        conductor: "Carlos Rojas",
+        pasajeros: 18,
+        hora: new Date(),
+        rutaIndex: 0,
+        segmentoIndex: 0,
+        progress: 0
+      }
+    ];
+
+    function inicializarMapa() {
+      console.log('Inicializando mapa...');
+      
+      // Limpiar recursos existentes
+      if(intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+        console.log('Intervalo anterior limpiado');
+      }
+
+      // Remover mapa existente si hay
+      if(map) {
+        map.remove();
+        markers = [];
+        console.log('Mapa anterior removido');
+      }
+
+      // Asegurarse de que el contenedor del mapa esté visible
+      const mapContainer = document.getElementById('map');
+      if(!mapContainer) {
+        console.error('Contenedor del mapa no encontrado');
+        return;
+      }
+
+      map = L.map('map', { 
+        scrollWheelZoom: true,
+        zoomControl: true
+      }).setView([-17.390, -66.161], 14);
+      
+      // Mover controles de zoom a la derecha
+      map.zoomControl.setPosition('topright');
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap',
+          maxZoom: 18
+      }).addTo(map);
+
+      markers = vehicleData.map(vehicle => {
+        let icono = L.divIcon({
+          className: 'custom-div-icon',
+          html: `<div style="
+            background-color: ${vehicle.tipo === 'BUS' ? '#2563eb' : '#f59e0b'};
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+          ">
+            <i class="fas ${vehicle.tipo === 'BUS' ? 'fa-bus' : 'fa-van-shuttle'}"></i>
+            ${vehicle.placa}
+          </div>`,
+          iconSize: [80, 30],
+          iconAnchor: [40, 15]
+        });
+        let marker = L.marker([vehicle.lat, vehicle.lng], {icon:icono})
+          .bindPopup(`
+            <div class="font-bold">${vehicle.placa}</div>
+            <div class="text-sm">
+              <div>${vehicle.tipo} - ${vehicle.ruta}</div>
+              <div class="text-blue-600">${vehicle.velocidad} km/h</div>
+              <div class="text-gray-600">${vehicle.hora.toLocaleTimeString()}</div>
+            </div>
+          `);
+        marker.addTo(map);
+        return marker;
+      });
+    }
+
+    function actualizarSideBarVehiculos() {
+      const target = document.getElementById('vehicle-realtime-list');
+      target.innerHTML = vehicleData.map(v =>
+        `<li class="py-1 border-b"><span class="font-medium">${v.placa}</span> — ${v.tipo} (${v.ruta})<br><span class="text-gray-500">Vel. ${v.velocidad} km/h</span> <span class="text-green-700">${v.estado}</span></li>`
+      ).join('');
+      const loc = document.getElementById('location-realtime-list');
+      loc.innerHTML = vehicleData.map(v => 
+        `<li class="py-2 border-b last:border-b-0">
+          <div class="flex items-center gap-2 mb-1">
+            <i class="fas ${v.tipo === 'BUS' ? 'fa-bus' : 'fa-van-shuttle'} text-blue-600"></i>
+            <span class="font-medium">${v.placa}</span>
+          </div>
+          <div class="text-sm text-gray-600">
+            <div class="flex items-center gap-2">
+              <i class="fas fa-map-marker-alt text-red-500"></i>
+              [${v.lat.toFixed(4)}, ${v.lng.toFixed(4)}]
+            </div>
+            <div class="flex items-center gap-2 mt-1">
+              <i class="fas fa-clock"></i>
+              ${v.hora.toLocaleTimeString()}
+            </div>
+          </div>
+        </li>`
+      ).join('');
+    }
+
+    // ================== ALERTAS SIMULADAS ==================
+    const alertasData = [
+      {
+        tipo: "RETRASO",
+        severidad: "ALTA",
+        ubicacion: "-17.392,-66.160",
+        estado: "ACTIVA",
+        hora: new Date(Date.now() - 1000*800)
+      },
+      {
+        tipo: "ACCIDENTE",
+        severidad: "MEDIA",
+        ubicacion: "-17.387,-66.159",
+        estado: "RESUELTA",
+        hora: new Date(Date.now() - 1000*6000)
+      },
+      {
+        tipo: "AVERIA",
+        severidad: "BAJA",
+        ubicacion: "-17.393,-66.155",
+        estado: "ACTIVA",
+        hora: new Date(Date.now() - 1000*1400)
+      },
+      {
+        tipo: "DESVIO",
+        severidad: "MEDIA",
+        ubicacion: "-17.390,-66.166",
+        estado: "ACTIVA",
+        hora: new Date(Date.now() - 1000*2000)
+      }
+    ];
+
+    function pintarTablaAlertas() {
+      const tbody = document.getElementById('alert-list-tbody');
+      tbody.innerHTML = alertasData.map(a =>
+        `<tr>
+          <td class="px-2 py-1">${a.tipo}</td>
+          <td class="px-2 py-1">${a.severidad}</td>
+          <td class="px-2 py-1">${a.ubicacion}</td>
+          <td class="px-2 py-1">
+            <span class="font-semibold ${a.estado=="ACTIVA"?"text-red-600":"text-green-700"}">${a.estado}</span>
+          </td>
+          <td class="px-2 py-1">${a.hora.toLocaleTimeString()}</td>
+          <td class="px-2 py-1">
+            <button class="text-blue-700 hover:underline text-xs" title="Detalle">
+              <i class="fas fa-info-circle"></i>
+            </button>
+            ${a.estado=="ACTIVA" ? `<button class="ml-1 text-green-700 hover:underline text-xs" title="Resolver">
+              <i class="fas fa-check"></i></button>` : ""}
+          </td>
+        </tr>`
+      ).join('');
+    }
+
+    // ========== CHART: ESTADO DE VEHÍCULOS Y ALERTAS ===========
+    function graficoEstadoVehiculos() {
+      let ctx = document.getElementById('vehicleStatusChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Activo', 'Mantenimiento', 'Inactivo'],
+          datasets: [{ 
+            data: [
+              vehicleData.filter(v=>v.estado=="En Ruta").length,
+              vehicleData.filter(v=>v.estado=="Mantenimiento").length,
+              vehicleData.filter(v=>v.estado=="Inactivo").length || 0
+            ],
+            backgroundColor: ['#2563eb','#eab308','#e11d48']
+          }]
+        },
+        options: { plugins: { legend: { position:'bottom', labels: {color:'#222', font: { size:14}}}}, responsive:true }
+      });
+    }
+
+    function graficoAlertasPorTipo() {
+      let chartDom = document.getElementById('alertTypeChart');
+      let myChart = echarts.init(chartDom);
+      let tipos = ["RETRASO","ACCIDENTE","AVERIA","DESVIO"];
+      let contar = tipo => alertasData.filter(a=>a.tipo===tipo).length;
+      myChart.setOption({
+        tooltip: {},
+        xAxis: { type: 'category', data: tipos },
+        yAxis: { type: 'value' },
+        series: [{
+          data: tipos.map(contar),
+          type: 'bar',
+          itemStyle: {
+            color: params => ['#f97316','#f43f5e','#2dd4bf','#818cf8'][params.dataIndex]
+          }
+        }]
+      });
+    }
+
+    // ============ DEMO SOCKET.IO REALTIME UI ===========
+    function simularMovimientoVehiculos() {
+      console.log('Iniciando simulación de movimiento...');
+      
+      if(intervalId) {
+        clearInterval(intervalId);
+        console.log('Simulación anterior detenida');
+      }
+
+      // Dibujar rutas en el mapa
+      Object.entries(rutasDefinidas).forEach(([nombre, coordenadas]) => {
+        L.polyline(coordenadas, {color: '#2563eb', weight: 3}).addTo(map);
+      });
+
+      intervalId = setInterval(function() {
+        if(detenerActualizaciones) return;
+
+        vehicleData.forEach((vehicle, index) => {
+          const ruta = rutasDefinidas[vehicle.ruta];
+          if (!ruta) return;
+
+          // Calcular siguiente posición en la ruta
+          const segmentoActual = ruta.slice(vehicle.segmentoIndex, vehicle.segmentoIndex + 2);
+          if (segmentoActual.length < 2) {
+            // Reiniciar al inicio de la ruta
+            vehicle.segmentoIndex = 0;
+            vehicle.progress = 0;
+            return;
+          }
+
+          // Calcular distancia del segmento
+          const [inicio, fin] = segmentoActual;
+          const distanciaSegmento = Math.sqrt(
+            Math.pow(fin[0] - inicio[0], 2) + 
+            Math.pow(fin[1] - inicio[1], 2)
+          );
+          
+          // Velocidad más precisa (metros/segundo convertidos a fracción de segmento)
+          const velocidadPorIntervalo = (vehicle.velocidad * 1000/3600 * 0.1) / (distanciaSegmento * 111320);
+          vehicle.progress += velocidadPorIntervalo;
+
+          if (vehicle.progress >= 1) {
+            // Pasar al siguiente segmento
+            vehicle.segmentoIndex++;
+            vehicle.progress = 0;
+            if (vehicle.segmentoIndex >= ruta.length - 1) {
+              vehicle.segmentoIndex = 0;
+              // Volver al inicio de la ruta
+              vehicle.lat = ruta[0][0];
+              vehicle.lng = ruta[0][1];
+            }
+          } else {
+            // Interpolar posición entre inicio y fin del segmento
+            vehicle.lat = inicio[0] + (fin[0] - inicio[0]) * vehicle.progress;
+            vehicle.lng = inicio[1] + (fin[1] - inicio[1]) * vehicle.progress;
+            vehicle.hora = new Date();
+
+            // Actualizar marcador
+            if (markers[index]) {
+              markers[index].setLatLng([vehicle.lat, vehicle.lng]);
+
+              // Actualizar popup si está abierto
+              let popup = markers[index].getPopup();
+              if (popup && popup.isOpen()) {
+                popup.setContent(`
+                  <div class="font-bold">${vehicle.placa}</div>
+                  <div class="text-sm">
+                    <div>${vehicle.tipo} - ${vehicle.ruta}</div>
+                    <div class="text-blue-600">${vehicle.velocidad} km/h</div>
+                    <div class="text-gray-600">${vehicle.hora.toLocaleTimeString()}</div>
+                  </div>
+                `);
+              }
+            }
+          }
+        });
+
+        actualizarSideBarVehiculos();
+      }, 100); // Actualizar cada 100ms para movimiento suave
+
+      console.log('Simulación iniciada correctamente');
+    }
+
+    // Limpiar recursos al salir
+    window.onbeforeunload = function() {
+      if(intervalId) {
+        clearInterval(intervalId);
+      }
+      if(map) {
+        map.remove();
+      }
+    };
+
+    // =========== INICIO ==============
+    // Toggle sidebar en móvil
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('active');
+      document.querySelector('.main-content').classList.toggle('pushed');
+    });
+
+    // Inicializar todo cuando la página esté lista
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Iniciando aplicación...');
+      inicializarMapa();
+      console.log('Mapa inicializado');
+      actualizarSideBarVehiculos();
+      console.log('Sidebar actualizado');
+      simularMovimientoVehiculos();
+      console.log('Simulación iniciada');
+      graficoEstadoVehiculos();
+      graficoAlertasPorTipo();
+    });
+  </script>
+</body>
+</html>

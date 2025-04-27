@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transporte Seguro - Configuración</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+  <link rel="stylesheet" href="css/configuracion.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-bus"></i> Transporte Seguro
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+      <a href="rutas.html" class="nav-item"><i class="fas fa-route"></i>Rutas</a>
+      <a href="vehiculos.html" class="nav-item"><i class="fas fa-bus-alt"></i>Vehículos</a>
+      <a href="paradas.html" class="nav-item"><i class="fas fa-map-marker-alt"></i>Paradas</a>
+      <a href="alertas.html" class="nav-item"><i class="fas fa-exclamation-triangle"></i>Alertas</a>
+      <a href="seguimiento.html" class="nav-item"><i class="fas fa-map-marked-alt"></i>Seguimiento</a>
+      <a href="usuarios.html" class="nav-item"><i class="fas fa-users"></i>Usuarios</a>
+      <a href="configuracion.html" class="nav-item active"><i class="fas fa-cog"></i>Configuración</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <div class="header">
+      <h1>Configuración del Sistema</h1>
+    </div>
+
+    <div class="config-section">
+      <h2>Datos Generales</h2>
+      <div class="form-group">
+        <label>Nombre de la Empresa</label>
+        <input type="text" placeholder="Transporte Seguro S.A.C">
+      </div>
+      <div class="form-group">
+        <label>Dirección</label>
+        <input type="text" placeholder="Av. Principal 123, Ciudad">
+      </div>
+      <div class="form-group">
+        <label>Teléfono</label>
+        <input type="text" placeholder="+51 999 999 999">
+      </div>
+      <div class="form-group">
+        <label>Correo de Contacto</label>
+        <input type="email" placeholder="contacto@transporteseguro.com">
+      </div>
+      <button class="btn"><i class="fas fa-save"></i>Guardar Cambios</button>
+    </div>
+
+    <div class="config-section">
+      <h2>Parámetros de Operación</h2>
+      <div class="form-group">
+        <label>Intervalo de Actualización (min)</label>
+        <select>
+          <option>5 minutos</option>
+          <option>10 minutos</option>
+          <option>15 minutos</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Modo de Operación</label>
+        <select>
+          <option>Normal</option>
+          <option>Modo Emergencia</option>
+        </select>
+      </div>
+      <button class="btn"><i class="fas fa-save"></i>Guardar Configuración</button>
+    </div>
+
+  </main>
+</body>
+</html>

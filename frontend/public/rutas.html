@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transporte Seguro - Rutas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/rutas.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <i class="fas fa-bus"></i>
+        <span>Transporte Seguro</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="rutas.html" class="nav-item active">
+        <i class="fas fa-route"></i>
+        <span>Rutas</span>
+      </a>
+      <a href="vehiculos.html" class="nav-item">
+        <i class="fas fa-bus-alt"></i>
+        <span>Vehículos</span>
+      </a>
+      <a href="paradas.html" class="nav-item">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>Paradas</span>
+      </a>
+      <a href="alertas.html" class="nav-item">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Alertas</span>
+      </a>
+      <a href="seguimiento.html" class="nav-item">
+        <i class="fas fa-map-marked-alt"></i>
+        <span>Seguimiento</span>
+      </a>
+      <a href="usuarios.html" class="nav-item">
+        <i class="fas fa-users"></i>
+        <span>Usuarios</span>
+      </a>
+      <a href="configuracion.html" class="nav-item">
+        <i class="fas fa-cog"></i>
+        <span>Configuración</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="header">
+      <h1>Gestión de Rutas</h1>
+      <div class="header-actions">
+        <button class="btn btn-outline">
+          <i class="fas fa-download"></i>
+          Exportar
+        </button>
+        <button class="btn btn-primary" id="addRouteBtn">
+          <i class="fas fa-plus"></i>
+          Nueva Ruta
+        </button>
+      </div>
+    </header>
+
+    <!-- Filtros -->
+    <div class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Estado</label>
+        <select class="filter-select" id="statusFilter">
+          <option value="all">Todos</option>
+          <option value="active">Activas</option>
+          <option value="inactive">Inactivas</option>
+          <option value="maintenance">En mantenimiento</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Tipo</label>
+        <select class="filter-select" id="typeFilter">
+          <option value="all">Todos</option>
+          <option value="urban">Urbanas</option>
+          <option value="interurban">Interurbanas</option>
+          <option value="special">Especiales</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Buscar</label>
+        <input type="text" class="filter-input" placeholder="Código o nombre..." id="searchInput">
+      </div>
+    </div>
+
+    <!-- Tabla de rutas -->
+    <div class="table-container">
+      <table class="routes-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Paradas</th>
+            <th>Horario</th>
+            <th>Vehículos</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="route-code">R-101</td>
+            <td>Centro - Norte</td>
+            <td>8</td>
+            <td>06:00 - 22:00</td>
+            <td>3</td>
+            <td>
+              <span class="route-status status-active">
+                <i class="fas fa-circle" style="font-size: 8px;"></i>
+                Activa
+              </span>
+            </td>
+            <td>
+              <div class="route-actions">
+                <button class="action-btn" title="Ver detalles">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="route-code">R-102</td>
+            <td>Centro - Sur</td>
+            <td>10</td>
+            <td>05:30 - 23:00</td>
+            <td>4</td>
+            <td>
+              <span class="route-status status-active">
+                <i class="fas fa-circle" style="font-size: 8px;"></i>
+                Activa
+              </span>
+            </td>
+            <td>
+              <div class="route-actions">
+                <button class="action-btn" title="Ver detalles">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="route-code">R-205</td>
+            <td>Este - Oeste</td>
+            <td>12</td>
+            <td>07:00 - 21:00</td>
+            <td>2</td>
+            <td>
+              <span class="route-status status-maintenance">
+                <i class="fas fa-circle" style="font-size: 8px;"></i>
+                Mantenimiento
+              </span>
+            </td>
+            <td>
+              <div class="route-actions">
+                <button class="action-btn" title="Ver detalles">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="route-code">R-304</td>
+            <td>Circular Norte</td>
+            <td>15</td>
+            <td>06:00 - 00:00</td>
+            <td>5</td>
+            <td>
+              <span class="route-status status-inactive">
+                <i class="fas fa-circle" style="font-size: 8px;"></i>
+                Inactiva
+              </span>
+            </td>
+            <td>
+              <div class="route-actions">
+                <button class="action-btn" title="Ver detalles">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="route-code">R-401</td>
+            <td>Zona Industrial</td>
+            <td>6</td>
+            <td>05:00 - 20:00</td>
+            <td>3</td>
+            <td>
+              <span class="route-status status-active">
+                <i class="fas fa-circle" style="font-size: 8px;"></i>
+                Activa
+              </span>
+            </td>
+            <td>
+              <div class="route-actions">
+                <button class="action-btn" title="Ver detalles">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination">
+      <div class="pagination-info">
+        Mostrando 1 a 5 de 20 rutas
+      </div>
+      <div class="pagination-controls">
+        <button class="page-btn">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">4</button>
+        <button class="page-btn">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Nueva Ruta -->
+  <div class="modal" id="addRouteModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Nueva Ruta</h2>
+        <button class="close-btn" id="closeModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="addRouteForm">
+          <div class="form-group">
+            <label for="routeCode">Código</label>
+            <input type="text" id="routeCode" name="routeCode" required>
+          </div>
+          <div class="form-group">
+            <label for="routeName">Nombre</label>
+            <input type="text" id="routeName" name="routeName" required>
+          </div>
+          <div class="form-group">
+            <label for="routeStops">Paradas</label>
+            <input type="number" id="routeStops" name="routeStops" required>
+          </div>
+          <div class="form-group">
+            <label for="routeSchedule">Horario</label>
+            <input type="text" id="routeSchedule" name="routeSchedule" required>
+          </div>
+          <div class="form-group">
+            <label for="routeVehicles">Vehículos</label>
+            <input type="number" id="routeVehicles" name="routeVehicles" required>
+          </div>
+          <div class="form-group">
+            <label for="routeStatus">Estado</label>
+            <select id="routeStatus" name="routeStatus" required>
+              <option value="active">Activa</option>
+              <option value="inactive">Inactiva</option>
+              <option value="maintenance">En mantenimiento</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-outline" id="cancelModalBtn">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal logic
+    const addRouteBtn = document.getElementById('addRouteBtn');
+    const addRouteModal = document.getElementById('addRouteModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+
+    addRouteBtn.addEventListener('click', () => {
+      addRouteModal.style.display = 'block';
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      addRouteModal.style.display = 'none';
+    });
+
+    cancelModalBtn.addEventListener('click', () => {
+      addRouteModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (event) => {
+      if (event.target === addRouteModal) {
+        addRouteModal.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

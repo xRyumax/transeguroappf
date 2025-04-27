@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transporte Seguro - Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+  <div class="container">
+    <div class="form-container login-container">
+      <form id="formLogin">
+        <img src="img/TranSeguro.png" alt="Logo Transporte Seguro" class="logo">
+
+        <h1>Iniciar Sesión</h1>
+        
+        <div class="input-field">
+          <i class="fas fa-user"></i>
+          <input type="email" id="correo" placeholder="Correo electrónico" required>
+        </div>
+        
+        <div class="input-field">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" placeholder="Contraseña" required>
+          <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+        </div>
+        
+        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        
+        <button type="submit" class="btn">Ingresar</button>
+        
+        <div class="social-container">
+          <p>O inicia sesión con</p>
+          <div>
+            <a href="#"><i class="fab fa-google"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-apple"></i></a>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-panel overlay-right">
+          <div class="transport-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h1>Transporte Seguro</h1>
+          <p>Tu seguridad es nuestra prioridad. Inicia sesión para acceder a nuestro sistema de transporte protegido y confiable.</p>
+          <button class="btn transparent" id="signIn">Registrarse</button>
+          <p style="margin-top: 15px;">
+            <a href="index.html" style="color: white; cursor: pointer; text-decoration: none;">
+              <i class="fas fa-arrow-left"></i> Volver al inicio
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="video-background">
+    <video autoplay muted loop id="bgVideo">
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-driving-on-the-highway-at-night-20047-large.mp4" type="video/mp4">
+      Tu navegador no soporta videos HTML5.
+    </video>
+  </div>
+
+  <script>
+    document.getElementById('formLogin').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const correo = document.getElementById('correo').value;
+      const password = document.getElementById('password').value;
+  
+      // Mostrar estado de carga
+      const submitBtn = this.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+  
+      try {
+        const res = await fetch('http://localhost:3000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ correo, password })
+        });
+  
+        const data = await res.json();
+        
+        // Mostrar mensaje flotante
+        const showMessage = (message, isSuccess) => {
+          const msgBox = document.createElement('div');
+          msgBox.style = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            background: ${isSuccess ? '#4CAF50' : '#f44336'};
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            z-index: 1000;
+            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+          `;
+          msgBox.textContent = message;
+          document.body.appendChild(msgBox);
+          
+          // Eliminar después de 3 segundos
+          setTimeout(() => msgBox.remove(), 3000);
+        };
+  
+        if (res.ok) {
+          showMessage('✅ Inicio de sesión exitoso. Bienvenido!', true);
+          
+          // Guardar datos del usuario en localStorage con validación
+          localStorage.setItem('nombre', data.nombre || '');
+          localStorage.setItem('rol', data.rol || 'usuario');
+          localStorage.setItem('correo', data.correo || '');
+          localStorage.setItem('id', data.id || '');
+  
+          // Redirigir después de 1 segundo
+          setTimeout(() => {
+            const rol = data.rol || 'usuario';
+            if (rol === 'admin') window.location.href = 'dashboard.html';
+            else if (rol === 'conductor') window.location.href = 'dashboard_conductor.html';
+            else if (rol === 'pasajero') window.location.href = 'dashboard_pasajero.html';
+            else window.location.href = 'dashboard.html'; // Ruta por defecto
+          }, 1000);
+        } else {
+          // Mostrar mensaje de error con validación para evitar 'undefined'
+          const errorMsg = data && typeof data.message === 'string' ? data.message : 'Error al iniciar sesión';
+          showMessage('❌ ' + errorMsg, false);
+        }
+      } catch (error) {
+        console.error('Error de conexión:', error);
+        showMessage('⚠️ Error de conexión. Intente nuevamente.', false);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Iniciar sesión';
+      }
+    });
+
+    // Toggle para mostrar/ocultar contraseña
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      const passwordInput = document.getElementById('password');
+      const icon = this;
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    });
+
+    document.getElementById('signIn').addEventListener('click', function() {
+      window.location.href = "register.html";
+    });
+  </script>
+</body>
+</html>
