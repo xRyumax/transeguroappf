@@ -3,7 +3,7 @@ const Usuario = require('../models/usuarioModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const registerUser = async (nombre, correo, password, rol) => {
+const registerUser = async (nombre, correo, password) => {
   const usuarioExistente = await Usuario.findOne({ correo });
   if (usuarioExistente) {
     throw new Error('El correo ya está registrado');
@@ -15,8 +15,7 @@ const registerUser = async (nombre, correo, password, rol) => {
   const nuevoUsuario = new Usuario({
     nombre,
     correo,
-    password: hashedPassword,
-    rol
+    password: hashedPassword
   });
 
   await nuevoUsuario.save();
