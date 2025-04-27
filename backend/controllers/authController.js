@@ -1,67 +1,65 @@
-const authRouter = require('./routers/authRouter');
-const vehiculoRouter = require('./routers/vehiculoRouter');
-const rutaRouter = require('./routers/rutaRouter');
-const paradaRouter = require('./routers/paradaRouter');
-const alertaRouter = require('./routers/alertaRouter');
-const seguimientoRouter = require('./routers/seguimientoRouter');
-const configuracionRouter = require('./routers/configuracionRouter');
-const usuarioRouter = require('./routers/usuarioRouter');
+const bcrypt = require('bcrypt');
+const Usuario = require('../models/Usuario');
+// const jwt = require('jsonwebtoken'); // si quieres usar token después
 
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const connectDB = require('./database/connection');
+exports.register = async (req, res) => {
+  try {
+    const { nombre, correo, password, rol } = req.body;
+    console.log('Registro recibido:', req.body);
 
-const app = express();
-
-// Middlewares
-app.use(cors());
-app.use(express.json());
-
-// 👉 Primero registrar todas las rutas de API
-app.use('/api/usuarios', usuarioRouter);
-app.use('/api/vehiculos', vehiculoRouter);
-app.use('/api/rutas', rutaRouter);
-app.use('/api/paradas', paradaRouter);
-app.use('/api/alertas', alertaRouter);
-app.use('/api/seguimientos', seguimientoRouter);
-app.use('/api/configuracions', configuracionRouter);
-app.use('/api/auth', authRouter);
-
-// 👉 Luego servir los archivos del frontend
-app.use(express.static(path.join(__dirname, 'frontend/public')));
-
-// 👉 Ruta principal
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend/public/index.html'));
-});
-
-// Middleware de manejo de errores
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Algo salió mal!' });
-});
-
-// Middleware de ruta no encontrada (404)
-app.use((req, res) => {
-    res.status(404).json({ error: 'Ruta no encontrada' });
-});
-
-const PORT = process.env.PORT || 3000;
-
-// Función para iniciar el servidor
-async function startServer() {
-    try {
-        await connectDB();
-        console.log('✅ Conexión a la base de datos establecida');
-        app.listen(PORT, () => {
-            console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-        });
-    } catch (error) {
-        console.error('❌ Error al iniciar el servidor:', error);
-        process.exit(1);
+    if (!nombre || !correo || !password || !rol) {
+      return res.status(400).json({ message: 'Todos los campos son requeridos' });
     }
-}
 
-startServer();
+    const userExists = await Usuario.findOne({ correo });
+    if (userExists) {
+      return res.status(400).json({ message: 'El correo ya está registrado' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new Usuario({ nombre, correo, password: hashedPassword, rol });
+    await newUser.save();
+
+    console.log('Usuario registrado:', newUser);
+    res.status(201).json({ message: 'Usuario registrado exitosamente' });
+  } catch (error) {
+    console.error('Error en el registro:', error);
+    res.status(500).json({ message: 'Error en el registro', error: error.message });
+  }
+};
+
+exports.login = async (req, res) => {
+  try {
+    const { correo, password } = req.body;
+    console.log('Intento de login:', req.body);
+
+    if (!correo || !password) {
+      return res.status(400).json({ message: 'Todos los campos son requeridos' });
+    }
+
+    const user = await Usuario.findOne({ correo });
+    if (!user) {
+      console.log('Usuario no encontrado:', correo);
+      return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      console.log('Contraseña incorrecta para usuario:', correo);
+      return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
+    }
+
+    console.log('Login exitoso para:', correo);
+
+    return res.status(200).json({
+      message: 'Login exitoso',
+      nombre: user.nombre || '',
+      correo: user.correo,
+      rol: user.rol || 'usuario',
+      id: user._id.toString()
+    });
+  } catch (error) {
+    console.error('Error en el login:', error);
+    res.status(500).json({ message: 'Error en el servidor. Intente más tarde.' });
+  }
+};

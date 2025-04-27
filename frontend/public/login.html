@@ -12,7 +12,6 @@
     <div class="form-container login-container">
       <form id="formLogin">
         <img src="img/TranSeguro.png" alt="Logo Transporte Seguro" class="logo">
-
         <h1>Iniciar Sesión</h1>
         
         <div class="input-field">
@@ -74,21 +73,19 @@
       const correo = document.getElementById('correo').value;
       const password = document.getElementById('password').value;
   
-      // Mostrar estado de carga
       const submitBtn = this.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
   
       try {
-        const res = await fetch('http://localhost:3000/api/auth/login', {
+        const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ correo, password })
         });
   
         const data = await res.json();
-        
-        // Mostrar mensaje flotante
+  
         const showMessage = (message, isSuccess) => {
           const msgBox = document.createElement('div');
           msgBox.style = `
@@ -107,29 +104,25 @@
           msgBox.textContent = message;
           document.body.appendChild(msgBox);
           
-          // Eliminar después de 3 segundos
           setTimeout(() => msgBox.remove(), 3000);
         };
   
         if (res.ok) {
           showMessage('✅ Inicio de sesión exitoso. Bienvenido!', true);
           
-          // Guardar datos del usuario en localStorage con validación
           localStorage.setItem('nombre', data.nombre || '');
           localStorage.setItem('rol', data.rol || 'usuario');
           localStorage.setItem('correo', data.correo || '');
           localStorage.setItem('id', data.id || '');
   
-          // Redirigir después de 1 segundo
           setTimeout(() => {
             const rol = data.rol || 'usuario';
             if (rol === 'admin') window.location.href = 'dashboard.html';
             else if (rol === 'conductor') window.location.href = 'dashboard_conductor.html';
             else if (rol === 'pasajero') window.location.href = 'dashboard_pasajero.html';
-            else window.location.href = 'dashboard.html'; // Ruta por defecto
+            else window.location.href = 'dashboard.html';
           }, 1000);
         } else {
-          // Mostrar mensaje de error con validación para evitar 'undefined'
           const errorMsg = data && typeof data.message === 'string' ? data.message : 'Error al iniciar sesión';
           showMessage('❌ ' + errorMsg, false);
         }
@@ -138,15 +131,13 @@
         showMessage('⚠️ Error de conexión. Intente nuevamente.', false);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Iniciar sesión';
+        submitBtn.innerHTML = 'Ingresar';
       }
     });
 
-    // Toggle para mostrar/ocultar contraseña
     document.getElementById('togglePassword').addEventListener('click', function() {
       const passwordInput = document.getElementById('password');
       const icon = this;
-      
       if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
         icon.classList.replace('fa-eye', 'fa-eye-slash');
