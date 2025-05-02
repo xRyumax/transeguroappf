@@ -11,6 +11,7 @@
   <!-- Estilos personalizados -->
   <link rel="stylesheet" href="css/login.css">
 </head>
+<<<<<<< HEAD
 <body class="bg-gray-100">
   <div class="bus-animation">
     <div class="bus">🚌</div>
@@ -26,6 +27,18 @@
           <i class="fas fa-shield-alt text-white text-5xl mb-3"></i>
           <h1 class="text-2xl font-bold text-white">Transporte Seguro</h1>
           <p class="text-blue-100 mt-1">Inicia sesión para continuar</p>
+=======
+<body>
+  <div class="container">
+    <div class="form-container login-container">
+      <form id="formLogin">
+        <img src="img/TranSeguro.png" alt="Logo Transporte Seguro" class="logo">
+        <h1>Iniciar Sesión</h1>
+        
+        <div class="input-field">
+          <i class="fas fa-user"></i>
+          <input type="email" id="correo" placeholder="Correo electrónico" required>
+>>>>>>> 7e321aaecbc54d9be11a6b10412804656c8f00b3
         </div>
 
         <!-- Formulario -->
@@ -154,10 +167,35 @@
         });
   
         const data = await res.json();
+<<<<<<< HEAD
+=======
+  
+        const showMessage = (message, isSuccess) => {
+          const msgBox = document.createElement('div');
+          msgBox.style = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            background: ${isSuccess ? '#4CAF50' : '#f44336'};
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            z-index: 1000;
+            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+          `;
+          msgBox.textContent = message;
+          document.body.appendChild(msgBox);
+          
+          setTimeout(() => msgBox.remove(), 3000);
+        };
+>>>>>>> 7e321aaecbc54d9be11a6b10412804656c8f00b3
   
         if (res.ok && data.token && data.usuario) {
           showMessage('✅ Inicio de sesión exitoso. Bienvenido!', true);
           
+<<<<<<< HEAD
           // Guardar token y datos del usuario
           localStorage.setItem('token', data.token);
           localStorage.setItem('usuario', JSON.stringify({
@@ -172,6 +210,22 @@
           }, 1000);
         } else {
           const errorMsg = data.mensaje || 'Error al iniciar sesión';
+=======
+          localStorage.setItem('nombre', data.nombre || '');
+          localStorage.setItem('rol', data.rol || 'usuario');
+          localStorage.setItem('correo', data.correo || '');
+          localStorage.setItem('id', data.id || '');
+  
+          setTimeout(() => {
+            const rol = data.rol || 'usuario';
+            if (rol === 'admin') window.location.href = 'dashboard.html';
+            else if (rol === 'conductor') window.location.href = 'dashboard_conductor.html';
+            else if (rol === 'pasajero') window.location.href = 'dashboard_pasajero.html';
+            else window.location.href = 'dashboard.html';
+          }, 1000);
+        } else {
+          const errorMsg = data && typeof data.message === 'string' ? data.message : 'Error al iniciar sesión';
+>>>>>>> 7e321aaecbc54d9be11a6b10412804656c8f00b3
           showMessage('❌ ' + errorMsg, false);
         }
       } catch (error) {
@@ -179,15 +233,13 @@
         showMessage('⚠️ Error de conexión. Intente nuevamente.', false);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Iniciar sesión';
+        submitBtn.innerHTML = 'Ingresar';
       }
     });
 
-    // Toggle para mostrar/ocultar contraseña
     document.getElementById('togglePassword').addEventListener('click', function() {
       const passwordInput = document.getElementById('password');
       const icon = this;
-      
       if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
         icon.classList.replace('fa-eye', 'fa-eye-slash');

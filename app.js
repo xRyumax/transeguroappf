@@ -1,6 +1,23 @@
+<<<<<<< HEAD
 const authRouter = require('./routers/authRouter');
 const mongoose = require('mongoose');
+=======
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
+const connectDB = require('./database/connection');
+>>>>>>> 7e321aaecbc54d9be11a6b10412804656c8f00b3
 
+const app = express();
+
+// Middlewares
+app.use(cors());
+app.use(express.json());
+
+// Importar rutas
+const authRouter = require('./routers/authRouter');
+const usuarioRouter = require('./routers/usuarioRouter');
 const vehiculoRouter = require('./routers/vehiculoRouter');
 const rutaRouter = require('./routers/rutaRouter');
 const paradaRouter = require('./routers/paradaRouter');
@@ -8,6 +25,7 @@ const alertaRouter = require('./routers/alertaRouter');
 const seguimientoRouter = require('./routers/seguimientoRouter');
 const configuracionRouter = require('./routers/configuracionRouter');
 
+<<<<<<< HEAD
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -21,6 +39,10 @@ app.use(express.json());
 
 // Configurar rutas de la API primero
 const usuarioRouter = require('./routers/usuarioRouter');
+=======
+// Usar rutas de API
+app.use('/api/auth', authRouter);
+>>>>>>> 7e321aaecbc54d9be11a6b10412804656c8f00b3
 app.use('/api/usuarios', usuarioRouter);
 app.use('/api/vehiculos', vehiculoRouter);
 app.use('/api/rutas', rutaRouter);
@@ -28,18 +50,32 @@ app.use('/api/paradas', paradaRouter);
 app.use('/api/alertas', alertaRouter);
 app.use('/api/seguimientos', seguimientoRouter);
 app.use('/api/configuracions', configuracionRouter);
-app.use('/api/auth', authRouter);
 
+<<<<<<< HEAD
 
 // Servir archivos estáticos y manejar rutas del frontend
+=======
+// Servir archivos estáticos del frontend
+>>>>>>> 7e321aaecbc54d9be11a6b10412804656c8f00b3
 app.use(express.static(path.join(__dirname, 'frontend/public')));
 
-// Ruta catch-all para el frontend
+// Ruta principal
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend/public/index.html'));
+  res.sendFile(path.join(__dirname, 'frontend/public/index.html'));
 });
 
-// Manejo de errores global
+// Rutas dinámicas para otras páginas del frontend
+app.get('/:page', (req, res) => {
+  const page = req.params.page;
+  res.sendFile(path.join(__dirname, 'frontend/public', page), (err) => {
+    if (err) {
+      console.error('Error al servir la página:', err);
+      res.status(404).send('Página no encontrada');
+    }
+  });
+});
+
+// Manejo global de errores
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Algo salió mal!' });
@@ -50,9 +86,10 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
+// Puerto
 const PORT = process.env.PORT || 3000;
 
-// Iniciar el servidor solo después de conectar a la base de datos
+// Función para iniciar el servidor
 async function startServer() {
   try {
     await connectDB();
@@ -67,4 +104,5 @@ async function startServer() {
   }
 }
 
+// Iniciar el servidor
 startServer();
