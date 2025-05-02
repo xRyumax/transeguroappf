@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransegurosApp - Seguros para Transporte</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">Transeguros<span>App</span></div>
+        
+        <div class="menu-toggle" id="mobile-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        
+        <nav class="navbar" id="navbar">
+            <ul class="navbar-list">
+                <li class="navbar-item">
+                    <a href="#home" class="navbar-link hover-underline active">
+                        <div class="separator"></div>
+                        <span class="span">Inicio</span>
+                    </a>
+                </li>
+
+                <li class="navbar-item">
+                    <a href="#menu" class="navbar-link hover-underline">
+                        <div class="separator"></div>
+                        <span class="span">Rutas</span>
+                    </a>
+                </li>
+
+                <li class="navbar-item">
+                    <a href="register.html" class="navbar-link hover-underline">
+                        <div class="separator"></div>
+                        <span class="span">Regístrate</span>
+                    </a>
+                </li>
+
+                <li class="navbar-item">
+                    <a href="login.html" class="navbar-link hover-underline">
+                        <div class="separator"></div>
+                        <span class="span">Inicia Sesión</span>
+                    </a>
+                </li>
+
+                <li class="navbar-item">
+                    <a href="#" class="navbar-link hover-underline">
+                        <div class="separator"></div>
+                        <span class="span">Contáctanos</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="hero" id="home">
+        <h1>Protege tu transporte con los mejores seguros</h1>
+        <p>Ofrecemos soluciones de seguros personalizadas para empresas de transporte, camioneros y flotas vehiculares. Cotiza en minutos y obtén la mejor cobertura.</p>
+        <a href="register.html" class="btn">Obtener Cotización</a>
+    </section>
+    
+    <section class="features" id="services">
+        <h2>Nuestros Servicios</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-truck"></i>
+                <h3>Seguro para Camiones</h3>
+                <p>Cobertura completa para tu unidad de transporte, incluyendo daños materiales, robo y responsabilidad civil.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-ship"></i>
+                <h3>Seguro de Carga</h3>
+                <p>Protege tu mercancía durante todo el trayecto, con coberturas adaptadas a tus necesidades específicas.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-users"></i>
+                <h3>Seguro de Flotillas</h3>
+                <p>Soluciones integrales para empresas con múltiples unidades vehiculares, con descuentos por volumen.</p>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-links">
+            <a href="#">Términos y Condiciones</a>
+            <a href="#">Política de Privacidad</a>
+            <a href="#">Preguntas Frecuentes</a>
+        </div>
+        <p>&copy; 2023 TransegurosApp. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        // Menu toggle para móviles
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navbar = document.getElementById('navbar');
+        
+        mobileMenu.addEventListener('click', function() {
+            this.classList.toggle('active');
+            navbar.classList.toggle('active');
+            
+            // Animación de hamburguesa a X
+            const spans = this.querySelectorAll('span');
+            if(navbar.classList.contains('active')) {
+                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                spans[1].style.opacity = '0';
+                spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+            } else {
+                spans[0].style.transform = 'rotate(0) translate(0)';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = 'rotate(0) translate(0)';
+            }
+        });
+        
+        // Cerrar menú al hacer clic en un enlace (para móviles)
+        document.querySelectorAll('.navbar-link').forEach(link => {
+            link.addEventListener('click', function() {
+                if(window.innerWidth <= 768) {
+                    mobileMenu.classList.remove('active');
+                    navbar.classList.remove('active');
+                    
+                    const spans = mobileMenu.querySelectorAll('span');
+                    spans[0].style.transform = 'rotate(0) translate(0)';
+                    spans[1].style.opacity = '1';
+                    spans[2].style.transform = 'rotate(0) translate(0)';
+                }
+                
+                // Manejar estado activo
+                document.querySelectorAll('.navbar-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Cerrar menú al hacer scroll (para móviles)
+        window.addEventListener('scroll', function() {
+            if(window.innerWidth <= 768 && navbar.classList.contains('active')) {
+                mobileMenu.classList.remove('active');
+                navbar.classList.remove('active');
+                
+                const spans = mobileMenu.querySelectorAll('span');
+                spans[0].style.transform = 'rotate(0) translate(0)';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = 'rotate(0) translate(0)';
+            }
+        });
+    </script>
+</body>
+</html>
